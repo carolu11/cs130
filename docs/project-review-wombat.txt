@@ -1,0 +1,173 @@
+CS130 Project Review
+====================
+
+Team performing review:  cockatoo
+Work being reviewed:  wombat
+
+The first two sections are for reviewing the `sheets` library code itself,
+excluding the test code and other aspects of the project.  The remaining
+sections are for those other supporting parts of the project.
+
+Feedback comments on design aspects of the `sheets` library
+-----------------------------------------------------------
+
+Consider the overall design and structure of the `sheets` library from
+the perspective of the GRASP principles (Lecture 20) - in particular the
+principles of high cohesion and low coupling.  What areas of the project
+codebase are structured in a highly effective way?  What areas of the
+codebase could be restructured to have higher cohesion and/or lower
+coupling?  Give specific suggestions for how to achieve this in the code.
+
+Effective Structuring
+    - The overall design and structure of the 'sheets' library seems to fall in line 
+      with GRASP principles. Although we will offer some points of possible improvement,
+      our overall view is that the code in the repository has been well managed and 
+      well thought out. It was extremely easy to nagivate through the repository structure 
+      and determine file/folder dependencies.
+    - The code basis does a good job of maintaining low coupling and high cohesion in general. 
+      Each of the major components for the spreadsheet engine are appropriately partitioned 
+      into their own classes and files in a well-organized manner. In particular, we noticed 
+      that the Sheet and Workbook classes were well designed so as to avoid any overlapping 
+      implementations of the same functionality. 
+    - Although cells could have been implemented as a separate component in the spreadsheet engine, 
+      the team has chosen to incorporate cells as a part of its corresponding sheet. Though 
+      this may slightly increase coupling and decrease cohesion, we believe that this structure 
+      is appropriate for the given scenario as there is no need to individually represent a cell
+      outside of its contents and value, which are already handled by the sheet's dictionary and 
+      the cell value evaluator.
+
+Possible Restructuring
+    - The Workbook class struggles with low cohesion and high coupling.
+      Currently, the Workbook class captures all code relating to users editing a workbook,
+      saving, loading, parsing cell contents, checking and updating cell dependencies, 
+      throwing errors, and more. We believe that the code basis could benefit from some 
+      restructuring of these individual components.
+    - One possible improvement that we would suggest to make would be to further separate 
+      out components within the Workbook and Sheet classes that could be generalized 
+      into their own classes. Although this would slightly increase the complexity 
+      of the file structure and dependencies, we believe that this tradeoff would be 
+      ultimately beneficial for increasing organization and readability. 
+      For example, tree operations could be represented in their own 
+      class and imported into the Workbook class as needed, and other general utility 
+      operations such as num_to_col, col_to_num, etc. which are currently repeated 
+      in the Workbook and Sheet classes can similarly be separated out into their own 
+      class and imported as necessary. This would reduce the 'clutter' of functionalities 
+      currently incorporated in the Workbook file (as the current file is almost 1500 lines 
+      long in total) to only need to include those directly related to user-based functionality 
+      so that all other internal functionality can be represented separately.
+      This could also be more useful for any future work being continued on the project. 
+      Separating these individual components out, would increase the encapsulation of the 
+      code basis and possibly allow for better ease-of-use in the future for someone who 
+      may be unfamiliar with the previous work done on the engine.
+
+
+Feedback comments on implementation aspects of the `sheets` library
+-------------------------------------------------------------------
+
+Consider the actual implementation of the project from the perspectives
+of coding style (naming, commenting, code formatting, decomposition into
+functions, etc.), and idiomatic use of the Python language and language
+features.  What practices are used effectively in the codebase to make
+for concise, readable and maintainable code?  What practices could or
+should be incorporated to improve the quality, expressiveness, readability
+and maintainability of the code?
+
+Effective Practices
+    - Effective use of comments for documentation of each function. This made understanding the 
+      code much faster and easier when reading. Specifically, detailed function descriptions 
+      and outlining of parameters and return values made the relationships between related 
+      functions very clear.
+    - Variable, function, and class names appropriately follow programming naming conventions 
+      while providing clear, meaningful context for its purpose.
+    - Good use of spacing to format the code into a readable manner.
+    - Explicitly outlines the classes imported from the modules used instead of using a *
+
+Improvements 
+    - Could factor out miscellaneous functions into their own class. Some examples of this 
+      include: is_string_float, is_string_digit, num_to_col, col_to_num
+    - We would also suggest setting internal helper functions to private, so as to not 
+      allow users from outside the class to be able to unexpectedly call these functions.
+    - Parameter typing annotations can be more extensively used for every function throughout 
+      the project to ensure they are as expected.
+    - Some commented code that could be removed.
+
+Feedback comments on testing aspects of the project
+---------------------------------------------------
+
+Consider the testing aspects of the project, from the perspective of "testing
+best practices" (Lectures 4-6):  completeness/thoroughness of testing,
+automation of testing, focus on testing the "most valuable" functionality vs.
+"trivial code," following the Arrange-Act-Assert pattern in individual tests,
+etc.  What testing practices are employed effectively in the project?  What
+testing practices should be incorporated to improve the quality-assurance
+aspects of the project?
+
+Completeness/Thoroughness
+    - The team's testing code is quite thorough, testing all the major functionalities 
+      and possible chokepoints/areas of interest regarding the complex relationships between 
+      the dependency tree, workbook, and sheets contained in the workbook.
+    - Some minor functionalities which were not explicitly tested thoroughly such as 
+      checking if sheet extents are correctly updating. Without creating an entire new test 
+      for it, this can be added to the existing tests relatively easily.
+    - There are some tests which have not been implemented that we would also suggest 
+      possibly implementing including the mnmesh test that could also be useful tests 
+      top help ensure correctness of cell dependencies.
+
+Automation
+    - While the team's testing code is quite thorough, the performance.py file was the only file 
+      which automated the testing process. In general, we found this file to be an effective 
+      performance tester, although some additional improvements could be made to introduce new 
+      varieties of generated cell contents containing references.
+    - All other tester files required manually testing cases and verifying their results. 
+      Although this implementation would save the most time, it is not the most easily changed. 
+      By automating the process (ie. generating random cell contents, locations, names, etc.)
+      for the other major operations such as moving/copying sheets and cells, the testing 
+      process would be able to test for different generated cases each time, instead 
+      of re-testing the same cases. Furthermore, letting a program generate test cases means 
+      that there is less likely to be any edge cases that may be missed.
+    - Good use of assert statements, instead of an alternative such as print statements, to avoid 
+      manual checking of outputs.
+
+Focus 
+    - The testing code is well focused on testing the "most valuable" functionality.
+      In general, all the major functions which are included in the previous projects are
+      individually tested for using unit tests, as well as when working together, using 
+      the performance tests and other written tests.
+    - We were unable to find any testing for functionalities which we deemed to be trivial.
+
+Arrange-Act-Assert
+    - The individual tests do a good job in following the arrange-act-assert pattern.
+      In general, any necessary helper functions for the tests are declared at the beginning,
+      any actions taken on the workbook to test the specific functionality in question 
+      are given afterwards, and the final results are checked using assertions against the
+      expected outputs to ensure their correctness.
+    - Some testing code group multiple functionalities together. To better utilize the 
+      arrange-act-assert pattern, we would suggest that some of these instance could be 
+      separated out and given their own tests.
+
+Consider the implementation quality of the testing code itself, in the same
+areas described in the previous section.  What practices are used effectively
+in the testing code to make it concise, readable and maintainable?  What
+practices could or should be incorporated to improve the quality of the
+testing code?
+
+The tests are nice and concise, making them easily understood by someone unfamiliar with the code.
+The use of comments throughout the test give additional clarity to the different cases that 
+are being tested and could be extremely helpful for future testing so that one would not need 
+to scour through the code to determine which cases have been tested for. This both allows for 
+better organization in the code, as well as provides an efficient way to find any edge-cases that 
+may remain untested.
+One thing that could be improved upon is to use the automated formula generation for cell contents
+more extensively in the other individual tests. While these tests do a good job of individually 
+testing different cases to search for any regression in functionality, its implementation means 
+that these testing files naturally become very long, with much repeated code, and static test 
+cases.
+
+Feedback comments on other aspects of the project
+-------------------------------------------------
+
+If you have any other comments - compliments or suggestions for improvement -
+that aren't covered by previous sections, please include them here.
+
+Great job with the repository, we were very impressed by the organization and conciseness,
+and enjoyed reviewing your project.
